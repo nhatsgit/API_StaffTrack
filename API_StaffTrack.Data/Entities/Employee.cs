@@ -65,4 +65,5 @@ public partial class Employee
 
     [InverseProperty("Employee")]
     public virtual ICollection<WorkPlan> WorkPlans { get; set; } = new List<WorkPlan>();
+
 }

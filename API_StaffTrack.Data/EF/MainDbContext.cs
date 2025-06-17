@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using API_StaffTrack.Data.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace API_StaffTrack.Data.EF;
 
-public partial class MainDbContext : DbContext
+public partial class MainDbContext :  IdentityDbContext<ApplicationUser>
 {
     public MainDbContext()
     {
@@ -34,6 +35,7 @@ public partial class MainDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<AttendanceRecord>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Attendan__3213E83F10196D76");
