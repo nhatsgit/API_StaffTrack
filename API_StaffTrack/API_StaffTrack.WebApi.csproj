@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -21,7 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\API_StaffTrack.Application\API_StaffTrack.Application.csproj" />
     <ProjectReference Include="..\API_StaffTrack.Data\API_StaffTrack.Data.csproj" />
+    <ProjectReference Include="..\API_StaffTrack.Models\API_StaffTrack.Models.csproj" />
+    <ProjectReference Include="..\API_StaffTrack.Utilities\API_StaffTrack.Utilities.csproj" />
   </ItemGroup>
 
 </Project>
