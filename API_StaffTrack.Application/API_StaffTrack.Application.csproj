@@ -19,8 +19,4 @@
     <ProjectReference Include="..\API_StaffTrack.Utilities\API_StaffTrack.Utilities.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

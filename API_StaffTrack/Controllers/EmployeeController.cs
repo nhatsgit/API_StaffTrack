@@ -1,56 +1,65 @@
-﻿using API_StaffTrack.Data;
+﻿using API_StaffTrack.Application.Services;
+using API_StaffTrack.Data;
 using API_StaffTrack.Data.EF;
 using API_StaffTrack.Data.Entities;
+using API_StaffTrack.Models.Common;
+using API_StaffTrack.Models.Request;
+using API_StaffTrack.Models.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API_StaffTrack.Controllers;
-
+[Route("api/[controller]/[action]")]
 [ApiController]
-[Route("api/[controller]")]
-public class EmployeesController : ControllerBase
+public class EmployeeController : ControllerBase
 {
-    private readonly MainDbContext _context;
+    private readonly IS_Employee _employeeService;
 
-    public EmployeesController(MainDbContext context)
+    public EmployeeController(IS_Employee employeeService)
     {
-        _context = context;
+        _employeeService = employeeService;
     }
 
-    // GET: api/employees
+    [HttpPost]
+    public async Task<ActionResult<ResponseData<MRes_Employee>>> Create([FromBody] MReq_Employee request)
+    {
+        var result = await _employeeService.Create(request);
+        return Ok(result);
+    }
+
+    [HttpPut]
+    public async Task<ActionResult<ResponseData<MRes_Employee>>> Update(int id, [FromBody] MReq_Employee request)
+    {
+        var result = await _employeeService.Update(id, request);
+        return Ok(result);
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult<ResponseData<int>>> Delete(int id)
+    {
+        var result = await _employeeService.Delete(id);
+        return Ok(result);
+    }
+
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<ActionResult<ResponseData<MRes_Employee>>> GetById(int id)
     {
-        var employees = await _context.Employees
-            .Where(e => e.Status == 1) 
-            .OrderBy(e => e.Name)
-            .ToListAsync();
-
-        return Ok(employees);
-    }
-    [HttpPost("test-create-employee")]
-    public async Task<IActionResult> Create()
-    {
-        int count = await _context.Employees.CountAsync();
-
-        var employee = new Employee
-        {
-            Name = $"staff{count + 1}", 
-            Email = $"staff{count + 1}@gmail.com",
-            PhoneNumber = "0394778814",
-            Department = "abbcb",
-            Position = "position",
-            JoinDate = DateOnly.FromDateTime(DateTime.Today),
-            IsActive = true,
-            Status = 1,
-            CreatedAt = DateTime.Now,
-            UpdateAt = null
-        };
-
-        _context.Employees.Add(employee);
-        await _context.SaveChangesAsync();
-
-        return Ok(employee);
+        var result = await _employeeService.GetById(id);
+        return Ok(result);
     }
 
+    [HttpGet]
+    public async Task<ActionResult<ResponseData<List<MRes_Employee>>>> GetAll()
+    {
+        var result = await _employeeService.GetAll();
+        return Ok(result);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<ResponseData<List<MRes_Employee>>>> GetByStatus(int status)
+    {
+        var result = await _employeeService.GetListByStatus(status);
+        return Ok(result);
+    }
 }

@@ -1,13 +1,18 @@
 using API_StaffTrack.Application.Mapper;
+using API_StaffTrack.Application.Services;
 using API_StaffTrack.Application.Ultilities;
 using API_StaffTrack.Data.EF;
 using API_StaffTrack.Data.Entities;
+using API_StaffTrack.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +24,8 @@ static void InitUtilitiesService(IServiceCollection services)
 
 static void InitDaoService(IServiceCollection services)
 {
-    
+    services.AddScoped<IS_Account, S_Account>();
+    services.AddScoped<IS_Employee, S_Employee>();
 }
 // Add services to the container.
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -41,6 +47,25 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+// Add JWT Authentication
+builder.Services.AddAuthentication(options => {
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options => {
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+    };
+});
 builder.Services.AddSwaggerGen(c =>
 {
     //c.OperationFilter<API.H2ADBSite.Portal.Variables.AddAuthorizationHeaderOperationHeader>();

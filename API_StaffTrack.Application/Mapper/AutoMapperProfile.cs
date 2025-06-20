@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using API_StaffTrack.Data.Entities;
 using API_StaffTrack.Models.Common;
+using API_StaffTrack.Models.Response;
 
 namespace API_StaffTrack.Application.Mapper
 {
@@ -9,10 +10,10 @@ namespace API_StaffTrack.Application.Mapper
         public AutoMapperProfile()
         {
             //Common
-            
+
 
             //Main
-            
+            CreateMap<Employee, MRes_Employee>();
 
         }
     }
