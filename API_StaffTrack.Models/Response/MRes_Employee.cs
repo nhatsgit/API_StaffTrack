@@ -20,7 +20,7 @@ namespace API_StaffTrack.Models.Response
 
         public string? Position { get; set; }
 
-        public DateOnly? JoinDate { get; set; }
+        public DateTime? JoinDate { get; set; }
 
         public bool? IsActive { get; set; }
 

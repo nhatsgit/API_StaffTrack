@@ -26,13 +26,19 @@ static void InitDaoService(IServiceCollection services)
 {
     services.AddScoped<IS_Account, S_Account>();
     services.AddScoped<IS_Employee, S_Employee>();
+    services.AddScoped<IS_WorkPlan, S_WorkPlan>();
+    services.AddScoped<IS_Notification, S_Notification>();
 }
 // Add services to the container.
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<MainDbContext>()
     .AddDefaultTokenProviders();
 builder.Services.AddDbContext<MainDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DB")));
-builder.Services.AddControllers();
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+{
+    options.SuppressInferBindingSourcesForParameters = true;
+    options.SuppressModelStateInvalidFilter = true;
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
 
