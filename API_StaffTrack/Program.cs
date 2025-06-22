@@ -28,6 +28,9 @@ static void InitDaoService(IServiceCollection services)
     services.AddScoped<IS_Employee, S_Employee>();
     services.AddScoped<IS_WorkPlan, S_WorkPlan>();
     services.AddScoped<IS_Notification, S_Notification>();
+    services.AddScoped<IS_AttendanceRecord,S_AttendanceRecord>();
+    services.AddScoped<IS_LeaveRequest, S_LeaveRequest>();
+    services.AddScoped<IS_MonthlyReport, S_MonthlyReport>();
 }
 // Add services to the container.
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
