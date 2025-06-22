@@ -31,6 +31,17 @@ namespace API_StaffTrack.Application.Mapper
             CreateMap<Notification, MRes_Notification>();
             CreateMap<MReq_Notification, Notification>();
 
+            CreateMap<MReq_AttendanceRecord, AttendanceRecord>();
+            CreateMap<AttendanceRecord, MRes_AttendanceRecord>();
+
+      
+            CreateMap<MReq_LeaveRequest, LeaveRequest>();
+            CreateMap<LeaveRequest, MRes_LeaveRequest>();
+
+        
+            CreateMap<MReq_MonthlyReport, MonthlyReport>();
+            CreateMap<MonthlyReport, MRes_MonthlyReport>();
+
         }
     }
 }
