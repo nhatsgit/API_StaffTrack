@@ -11,6 +11,8 @@ namespace API_StaffTrack.Models.Response
         public int Id { get; set; }
 
         public int EmployeeId { get; set; }
+        public string EmployeeName { get; set; }   
+        public string EmployeeEmail { get; set; }  
 
         public DateTime LeaveDate { get; set; }
 

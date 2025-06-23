@@ -47,7 +47,7 @@ namespace API_StaffTrack.Application.Services
 
                 _context.LeaveRequests.Add(entity);
                 await _context.SaveChangesAsync();
-
+                
                 res.data = _mapper.Map<MRes_LeaveRequest>(entity);
                 res.result = 1;
             }
@@ -117,7 +117,7 @@ namespace API_StaffTrack.Application.Services
             var res = new ResponseData<MRes_LeaveRequest>();
             try
             {
-                var entity = await _context.LeaveRequests.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+                var entity = await _context.LeaveRequests.Include(i => i.Employee).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
                 if (entity == null)
                 {
                     res.error.message = "Không tìm thấy yêu cầu nghỉ phép.";
@@ -140,7 +140,7 @@ namespace API_StaffTrack.Application.Services
             var res = new ResponseData<List<MRes_LeaveRequest>>();
             try
             {
-                var list = await _context.LeaveRequests.AsNoTracking().ToListAsync();
+                var list = await _context.LeaveRequests.Include(i=>i.Employee).AsNoTracking().ToListAsync();
                 res.data = _mapper.Map<List<MRes_LeaveRequest>>(list);
                 res.result = 1;
             }
