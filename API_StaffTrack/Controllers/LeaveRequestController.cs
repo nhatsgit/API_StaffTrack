@@ -20,11 +20,17 @@ namespace API_StaffTrack.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] MReq_LeaveRequest request)
+        [Authorize(Roles = "Employee")]
+        public async Task<IActionResult> CreateByEmployee ([FromBody] MReq_LeaveRequest request)
         {
+            var employeeIdClaim = User.FindFirst("EmployeeId");
+            if (employeeIdClaim == null)
+                return Unauthorized("Không xác định được EmployeeId.");
+            request.EmployeeId = int.Parse(employeeIdClaim.Value); // Lấy EmployeeId từ claim
             var result = await _leaveService.Create(request);
             return Ok(result);
         }
+        
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] MReq_LeaveRequest request)
@@ -61,6 +67,7 @@ namespace API_StaffTrack.WebApi.Controllers
             return Ok(result);
         }
         [HttpPost("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Approve(int id)
         {
             var employeeIdClaim = User.FindFirst("EmployeeId");

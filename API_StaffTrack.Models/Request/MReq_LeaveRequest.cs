@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace API_StaffTrack.Models.Request
 {
     public class MReq_LeaveRequest
     {
-        [Required]
+        [JsonIgnore]
         public int EmployeeId { get; set; }
 
         [Required]
@@ -17,9 +18,9 @@ namespace API_StaffTrack.Models.Request
 
         [StringLength(255)]
         public string? Reason { get; set; }
-
+        [JsonIgnore]
         public int? ApprovedBy { get; set; }
-
+        [JsonIgnore]
         public DateTime? ApprovalDate { get; set; }
 
         public int? Status { get; set; }

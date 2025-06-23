@@ -16,7 +16,7 @@ namespace API_StaffTrack.Services
 {
     public interface IS_Account
     {
-        Task<string> Register(MReq_Register request);
+        Task<string> RegisterAdmin(int employeeId, MReq_Register request);
         Task<string> Login(string email, string password);
         Task<string> RegisterEmployee(int employeeId, MReq_Register request);
     }
@@ -35,17 +35,28 @@ namespace API_StaffTrack.Services
             _context = context;
         }
 
-        public async Task<string> Register(MReq_Register request)
+        public async Task<string> RegisterAdmin(int employeeId, MReq_Register request)
         {
+            var employee = await _context.Employees.AsNoTracking().FirstOrDefaultAsync(x => x.Id == employeeId);
+            if (employee == null)
+            {
+                return "Không tìm thấy nhân viên.";
+            }
             var user = new ApplicationUser
             {
                 UserName = request.UserName,
                 Email = request.Email
             };
-            var result = await _userManager.CreateAsync(user,request.Password);
+            user.EmployeeId = employeeId;
+            var result = await _userManager.CreateAsync(user, request.Password);
             if (result.Succeeded)
             {
-                return "User registered successfully.";
+                if (!await _roleManager.RoleExistsAsync("Admin"))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                }
+                await _userManager.AddToRoleAsync(user, "Admin");
+                return "Employee registered successfully.";
             }
 
             return string.Join(", ", result.Errors.Select(e => e.Description));

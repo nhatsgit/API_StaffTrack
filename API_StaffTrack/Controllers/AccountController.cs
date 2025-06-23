@@ -18,11 +18,11 @@ namespace API_StaffTrack.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] MReq_Register request)
+        public async Task<IActionResult> RegisterAdmin([FromBody] MReq_Register request, int employeeId)
         {
             
 
-            var result = await _accountService.Register(request);
+            var result = await _accountService.RegisterAdmin(employeeId,request);
             if (result == "User registered successfully.")
             {
                 return Ok(result);

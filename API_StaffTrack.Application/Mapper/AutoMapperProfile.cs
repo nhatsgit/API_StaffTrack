@@ -35,10 +35,15 @@ namespace API_StaffTrack.Application.Mapper
             CreateMap<AttendanceRecord, MRes_AttendanceRecord>();
 
       
-            CreateMap<MReq_LeaveRequest, LeaveRequest>();
-            CreateMap<LeaveRequest, MRes_LeaveRequest>();
+     
+            CreateMap<MReq_LeaveRequest, LeaveRequest>()
+            .ForMember(dest => dest.LeaveDate,
+               opt => opt.MapFrom(src => DateOnly.FromDateTime(src.LeaveDate)));
 
-        
+            CreateMap<LeaveRequest, MRes_LeaveRequest>()
+                .ForMember(dest => dest.LeaveDate,
+                           opt => opt.MapFrom(src => src.LeaveDate.ToDateTime(TimeOnly.MinValue)));
+
             CreateMap<MReq_MonthlyReport, MonthlyReport>();
             CreateMap<MonthlyReport, MRes_MonthlyReport>();
 
