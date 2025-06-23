@@ -1,4 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
@@ -7,13 +7,18 @@ using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 using API_StaffTrack.Models;
 using API_StaffTrack.Data.Entities;
+using Azure.Core;
+using API_StaffTrack.Models.Request;
+using API_StaffTrack.Data.EF;
+using Microsoft.EntityFrameworkCore;
 
 namespace API_StaffTrack.Services
 {
     public interface IS_Account
     {
-        Task<string> Register(ApplicationUser user, string password);
+        Task<string> Register(MReq_Register request);
         Task<string> Login(string email, string password);
+        Task<string> RegisterEmployee(int employeeId, MReq_Register request);
     }
 
     public class S_Account : IS_Account
@@ -21,17 +26,23 @@ namespace API_StaffTrack.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _config;
         private readonly RoleManager<IdentityRole> _roleManager;
-
-        public S_Account(UserManager<ApplicationUser> userManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager)
+        private readonly MainDbContext _context;
+        public S_Account(UserManager<ApplicationUser> userManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager, MainDbContext context)
         {
             _userManager = userManager;
             _config = configuration;
             _roleManager=roleManager;
+            _context = context;
         }
 
-        public async Task<string> Register(ApplicationUser user, string password)
+        public async Task<string> Register(MReq_Register request)
         {
-            var result = await _userManager.CreateAsync(user, password);
+            var user = new ApplicationUser
+            {
+                UserName = request.UserName,
+                Email = request.Email
+            };
+            var result = await _userManager.CreateAsync(user,request.Password);
             if (result.Succeeded)
             {
                 return "User registered successfully.";
@@ -39,7 +50,32 @@ namespace API_StaffTrack.Services
 
             return string.Join(", ", result.Errors.Select(e => e.Description));
         }
+        public async Task<string> RegisterEmployee(int employeeId, MReq_Register request)
+        {
+            var employee = await _context.Employees.AsNoTracking().FirstOrDefaultAsync(x => x.Id == employeeId);
+            if (employee == null)
+            {              
+                return "Không tìm thấy nhân viên.";
+            }
+            var user = new ApplicationUser
+            {
+                UserName = request.UserName,
+                Email = request.Email
+            };
+            user.EmployeeId = employeeId;
+            var result = await _userManager.CreateAsync(user, request.Password);
+            if (result.Succeeded)
+            {
+                if (!await _roleManager.RoleExistsAsync("Employee"))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole("Employee"));
+                }
+                await _userManager.AddToRoleAsync(user, "Employee");
+                return "Employee registered successfully.";
+            }
 
+            return string.Join(", ", result.Errors.Select(e => e.Description));
+        }
         public async Task<string> Login(string email, string password)
         {
             var user = await _userManager.FindByEmailAsync(email);
