@@ -3,6 +3,7 @@ using API_StaffTrack.Models.Request;
 using API_StaffTrack.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace API_StaffTrack.WebApi.Controllers
 {
@@ -57,6 +58,18 @@ namespace API_StaffTrack.WebApi.Controllers
         public async Task<IActionResult> GetByEmployee(int employeeId)
         {
             var result = await _leaveService.GetByEmployee(employeeId);
+            return Ok(result);
+        }
+        [HttpPost("{id}")]
+        public async Task<IActionResult> Approve(int id)
+        {
+            var employeeIdClaim = User.FindFirst("EmployeeId");
+
+            if (employeeIdClaim == null)
+                return Unauthorized("Không xác định được EmployeeId.");
+
+            int approvedBy = int.Parse(employeeIdClaim.Value); 
+            var result = await _leaveService.Approve(id, approvedBy);
             return Ok(result);
         }
     }

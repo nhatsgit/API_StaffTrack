@@ -21,6 +21,7 @@ namespace API_StaffTrack.Application.Services
         Task<ResponseData<MRes_LeaveRequest>> GetById(int id);
         Task<ResponseData<List<MRes_LeaveRequest>>> GetAll();
         Task<ResponseData<List<MRes_LeaveRequest>>> GetByEmployee(int employeeId);
+        Task<ResponseData<MRes_LeaveRequest>> Approve(int id, int approvedBy);
     }
     public class S_LeaveRequest : IS_LeaveRequest
     {
@@ -162,6 +163,34 @@ namespace API_StaffTrack.Application.Services
                     .ToListAsync();
 
                 res.data = _mapper.Map<List<MRes_LeaveRequest>>(list);
+                res.result = 1;
+            }
+            catch (Exception ex)
+            {
+                res.result = -1;
+                res.error.message = $"Exception: {ex.Message}";
+            }
+            return res;
+        }
+        public async Task<ResponseData<MRes_LeaveRequest>> Approve(int id, int approvedBy)
+        {
+            var res = new ResponseData<MRes_LeaveRequest>();
+            try
+            {
+                var entity = await _context.LeaveRequests.FindAsync(id);
+                if (entity == null)
+                {
+                    res.error.message = "Không tìm thấy yêu cầu nghỉ phép.";
+                    return res;
+                }
+
+                entity.ApprovedBy = approvedBy;
+                entity.UpdateAt = DateTime.Now;
+
+                _context.LeaveRequests.Update(entity);
+                await _context.SaveChangesAsync();
+
+                res.data = _mapper.Map<MRes_LeaveRequest>(entity);
                 res.result = 1;
             }
             catch (Exception ex)

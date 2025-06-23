@@ -81,13 +81,15 @@ namespace API_StaffTrack.Services
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null || !await _userManager.CheckPasswordAsync(user, password))
             {
-                return string.Empty;
+                return "Tài khoản hoặc mật khẩu không chính xác";
             }
 
             var authClaims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                 new Claim("EmployeeId", user.EmployeeId?.ToString() ?? "0")
             };
 
             var userClaims = await _userManager.GetClaimsAsync(user);
